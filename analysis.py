@@ -17,7 +17,7 @@ sns.set(style="whitegrid")
 # =====================================================
 # LOAD TRIAL-LEVEL DATA
 # =====================================================
-data_folder = "data"
+data_folder = "DataNew"
 csv_files = [f for f in os.listdir(data_folder) if f.endswith(".csv") and "keylog" not in f]
 
 dfs = []
@@ -26,7 +26,6 @@ for f in csv_files:
     dfs.append(df)
 
 data = pd.concat(dfs, ignore_index=True)
-
 
 # =====================================================
 # LOAD QUESTIONNAIRE
@@ -40,16 +39,18 @@ if questionnaire.shape[1] == 1:
     questionnaire = questionnaire.iloc[:, 0].str.split(",", expand=True)
     questionnaire.columns = ["ParticipantID", "Mood", "Fatigue", "Smell"]
 
+questionnaire["ParticipantID"] = questionnaire["ParticipantID"].astype(str)
 questionnaire[["Mood", "Fatigue", "Smell"]] = questionnaire[["Mood", "Fatigue", "Smell"]].apply(pd.to_numeric)
 
-
+print(questionnaire)
 # =====================================================
 # COMPUTE ACCURACY PER PARTICIPANT
 # =====================================================
 accuracy_df = data.groupby(["ParticipantID", "Condition"], as_index=False).agg(
     Accuracy=("Accuracy", "mean")
 )
-
+accuracy_df["ParticipantID"] = accuracy_df["ParticipantID"].astype(str)
+print(accuracy_df)
 # Merge mood/fatigue/smell
 accuracy_df = accuracy_df.merge(questionnaire, on="ParticipantID", how="left")
 
@@ -114,6 +115,7 @@ plt.figure(figsize=(6,4))
 sns.boxplot(x="Condition", y="Accuracy", data=accuracy_df)
 sns.swarmplot(x="Condition", y="Accuracy", data=accuracy_df, color="black", size=4)
 plt.title("Accuracy by Condition")
+plt.ylim(0,1)
 plt.savefig("plot_accuracy_boxplot.png", dpi=300)
 plt.close()
 
