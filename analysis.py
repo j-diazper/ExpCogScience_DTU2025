@@ -179,7 +179,7 @@ interaction_model = ols(
 ).fit()
 
 interaction_anova = sm.stats.anova_lm(interaction_model, typ=2)
-interaction_pvalues = interaction_anova.loc[[i for i in interaction_anova.index if "*" in i], "PR(>F)"]
+interaction_pvalues = interaction_anova.loc[[i for i in interaction_anova.index if ":" in i], "PR(>F)"]
 
 print("\nInteraction p-values:")
 print(interaction_pvalues)
